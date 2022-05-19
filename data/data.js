@@ -1,0 +1,13 @@
+const docusign = require("docusign-esign");
+const restApi = docusign.ApiClient.RestApi;
+
+const basePath = restApi.BasePath.DEMO;
+
+const user = {
+  accessToken:
+    "eyJ0eXAiOiJNVCIsImFsZyI6IlJTMjU2Iiwia2lkIjoiNjgxODVmZjEtNGU1MS00Y2U5LWFmMWMtNjg5ODEyMjAzMzE3In0.AQoAAAABAAUABwCAuixM2jnaSAgAgPpPWh062kgCAOCB-Bn0sMFPsi_-6hcM_dAVAAEAAAAYAAEAAAAFAAAADQAkAAAAMzZlYjhkMjYtMjlhMC00ZjI3LWFmOTYtZGUxZjQ0NDM0NGRlIgAkAAAAMzZlYjhkMjYtMjlhMC00ZjI3LWFmOTYtZGUxZjQ0NDM0NGRlMACAOAX51jnaSDcA3z38NkbRSUyWGDvYl4Ofxg.jF1Y3mfm8m1vvmqsiVzNDqwZGN3etzMzeDF9rFXm1yo97kODeI8caWKy2B2gDdCN_qCg3XDDe5LvAILf0YKUsTA6dywgQoMp97ZBYC7uTA2Z8n1j-uKLs3gEldOCJZxWe0Z-9H09kYKWWX03J9h3zihht_0ECUwMpUpAmNxkVGdK-2QjY6ZzYGVBm8W6lAHM9uhJhpRg4gRCOi6GacC95LJJxdji9RQYCZX9fhZon5ezG97nTixYCxtIZL11zLiYTiBJInEHBf9hrrskdXqvbpTWw24tNmSS04jRtxD8rPqJ6GUJQp-m64t4SWk5rfBVYTnupsRP1ss1u_Fp2KdP1Q",
+  basePath: basePath,
+  accountId: "d49abe6c-b9b4-4d91-a032-79c071964ca4"
+};
+
+module.exports = user;
