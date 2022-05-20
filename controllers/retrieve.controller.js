@@ -134,8 +134,8 @@ async function resultsHandler() {
   return dataResult;
 }
 
-eventEmitter.on("results", resultsHandler);
-eventEmitter.emit("results");
+//eventEmitter.on("results", resultsHandler);
+//eventEmitter.emit("results");
 
 //eventEmitter.on("name", getRecipientsNames);
 //eventEmitter.emit("name");
