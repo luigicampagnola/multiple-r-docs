@@ -61,21 +61,7 @@ async function retrieveController(i) {
   return downloadResults;
 }
 
-// <-----------------------------------------------------------> //
-// ######### R E S U L T  H A N D L E R
-/* async function test() {
-  const envelopesInfo = await readEnvelopesInfo().catch((err) => {
-    console.log("error on envelopesInfo resultsHandler");
-  });
-  const envelope = envelopesInfo.envelopes;
 
-  const date = envelope.map((envelope)=>{
-    return envelope.createdDateTime
-  })
-
-
-  console.log(date)
-} */
 
 async function resultsHandler() {
   const envelopesInfo = await readEnvelopesInfo().catch((err) => {

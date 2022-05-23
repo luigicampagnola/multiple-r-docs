@@ -16,12 +16,9 @@ async function getSharedEnvelopes() {
     results = await shared.listSharedAccess(data.accountId)
 
     console.log(results)
-
-
 }
-
-eventEmitter.on("getEnvelope", getSharedEnvelopes);
-eventEmitter.emit("getEnvelope");
+//eventEmitter.on("getEnvelope", getSharedEnvelopes);
+//eventEmitter.emit("getEnvelope")
 
 module.exports = {
   getSharedEnvelopes,
