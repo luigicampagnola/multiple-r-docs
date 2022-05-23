@@ -1,0 +1,28 @@
+const events = require("events");
+const docusign = require("docusign-esign");
+const data = require("../data/data")
+
+const eventEmitter = new events.EventEmitter();
+
+async function getSharedEnvelopes() {
+    let dsApiClient = new docusign.ApiClient();
+    dsApiClient.setBasePath(data.basePath);
+    dsApiClient.addDefaultHeader("Authorization", "Bearer " + data.accessToken);
+    let folders = new docusign.FoldersApi(dsApiClient),
+    results = null;
+
+    let shared = new docusign.AccountsApi(dsApiClient)
+
+    results = await shared.listSharedAccess(data.accountId)
+
+    console.log(results)
+
+
+}
+
+eventEmitter.on("getEnvelope", getSharedEnvelopes);
+eventEmitter.emit("getEnvelope");
+
+module.exports = {
+  getSharedEnvelopes,
+};
