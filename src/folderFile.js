@@ -1,14 +1,14 @@
-const { readAccountInfo } = require("../file-handlers/readWriteAPI")
+const { readAccountInformation } = require("../file-handlers/readWriteAPI")
 const fs = require("fs");
 
 const path = require("path");
 
 async function createFolderDownload() {
-  const accountInfo = await readAccountInfo().catch((err) =>
+  const accountInfo = await readAccountInformation().catch((err) =>
     console.log("error accountInfo createFolderDownload")
   );
 
-  const accountName = accountInfo.accountName
+  const accountName = accountInfo.name
   const folderDownload = path.dirname(__dirname) + "/downloads/";
 
 

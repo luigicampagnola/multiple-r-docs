@@ -11,8 +11,7 @@ const eventEmitter = new events.EventEmitter();
 
 const folderPath = path.dirname(__dirname) + "/data/";
 
-
-const userInfoFile = path.join(folderPath, "userInfo.json");
+const envelopeFile = path.join(folderPath, "envelopes.json");
 
 const accountInfoFile = path.join(folderPath, "accountInfo.json");
 
@@ -22,16 +21,51 @@ const accessAccountInfoFile = path.join(folderPath, "user-Info.json");
 
 // <-------------------------- W R I T E  I N F O  J S O N  F I L E S --------------------------------->
 
-
 // WRITE FILE ENVELOPES
 
-async function writeFileEnvelopesInfo() {
+async function writeEnvelopesInfo() {
+  const accountInfo = await readAccountInformation().catch((err) => {
+    console.log("error readAccountInformation writeEnvelopesInfo");
+  });
+
+  const accessToken = await readAccessToken().catch((err) => {
+    console.log("error getting accessToken  writeEnvelopesInfo");
+  });
+
+  let token = accessToken.accessToken;
+
+  const accoundId = accountInfo.accounts[0].accountId;
+  let basePath = accountInfo.accounts[0].baseUri + "/restapi";
+
+  console.log(basePath);
+
+  const results = await getFolderModel(accoundId, token, basePath).catch(
+    (erro) => console.log("error handling getFolderModel writeEnvelopesInfo")
+  );
+
+  if (results) {
+    if (!fs.existsSync(folderPath)) {
+      fs.mkdirSync(folderPath);
+    }
+  }
+
+  let writer = fs.createWriteStream(folderPath + "envelopes.json");
+
+  writer.write(JSON.stringify(results, null, 2));
+}
+
+// write  envelopes
+
+/* async function writeFileEnvelopesInfo() {
   const accountInfo = await readAccountInfo().catch((erro) => {
     console.log("error accountInfo writeFileEnvelopesInfo");
   });
 
+  console.log(accountInfo);
+
   const accountId = accountInfo.accountIdGuid;
-  const results = await getFolderModel(accountId).catch((error) =>
+  //console.log(accountId)
+  const results = await getFolderModel().catch((error) =>
     console.log("error on createFileEnvelopeId")
   );
   if (results) {
@@ -45,8 +79,7 @@ async function writeFileEnvelopesInfo() {
   writer.write(JSON.stringify(results, null, 2));
 
   return "Success";
-}
-
+}  */
 
 // WRITE ACCOUNT INFO
 
@@ -54,8 +87,8 @@ async function writeAccountInfo() {
   const results = await getUserInfoModel().catch((err) =>
     console.log("err on getUserInfo writeAccountInfo")
   );
-  
-  console.log(results)
+
+  console.log(results);
 
   if (results) {
     if (!fs.existsSync(folderPath)) {
@@ -69,23 +102,21 @@ async function writeAccountInfo() {
   return "Success";
 }
 
-
 // <-------------------------- R E A D  I N F O  J S O N  F I L E S --------------------------------->
 
-async function readAccountInfo() {
+/*  async function readAccountInfo() {
   let reader = fs.createReadStream(accountInfoFile);
 
-  //console.log(reader)
   return new Promise((resolve, reject) => {
     reader.on("data", function (chunk) {
       //console.log(JSON.parse(chunk))
       return resolve(JSON.parse(chunk));
     });
   });
-}
+}  */
 
 async function readEnvelopesInfo() {
-  let reader = fs.createReadStream(userInfoFile, "utf8");
+  let reader = fs.createReadStream(envelopeFile, "utf8");
   let data = "";
   for await (const chunk of reader) {
     data += chunk;
@@ -95,6 +126,8 @@ async function readEnvelopesInfo() {
   return JSON.parse(data);
 }
 
+// R E A D  A C C E S S  T O K E N
+
 async function readAccessToken() {
   let accessToken = fs.createReadStream(accessTokenInfoFile, "utf8");
   let data = "";
@@ -103,9 +136,11 @@ async function readAccessToken() {
     data += chunk;
   }
 
-  console.log(data);
+  //onsole.log(data);
   return JSON.parse(data);
 }
+
+// R E A D  A C C O U N T  I N F O R M A T I O N
 
 async function readAccountInformation() {
   let accountInfo = fs.createReadStream(accessAccountInfoFile, "utf8");
@@ -119,16 +154,13 @@ async function readAccountInformation() {
   return JSON.parse(data);
 }
 
-
-
-eventEmitter.on("read", writeAccountInfo)
+eventEmitter.on("read", readAccountInformation);
 eventEmitter.emit("read");
 //eventEmitter.on("readAccountInfo", readEnvelopesInfo);
 
 module.exports = {
-  writeFileEnvelopesInfo,
+  writeEnvelopesInfo,
   readEnvelopesInfo,
-  readAccountInfo,
   readAccessToken,
-  readAccountInformation
+  readAccountInformation,
 };

@@ -23,7 +23,7 @@ let apiClient = new docusign.ApiClient({
 
 //console.log(basePath)
 let responseType = apiClient.OAuth.ResponseType.CODE;
-let scopes = [apiClient.OAuth.Scope.EXTENDED];
+let scopes = [apiClient.OAuth.Scope.SIGNATURE];
 
 let randomState = "*^.$DGj*)+}Jk";
 

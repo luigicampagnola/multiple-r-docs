@@ -1,7 +1,11 @@
 const docusign = require("docusign-esign");
 let count = 0;
+/* --experimental-repl-await
+ */// R E T R I E V E  M O D E L
+function delay (t) {
+  return new Promise(resolve => setTimeout(resolve, t));
+}
 
-// R E T R I E V E  M O D E L
 async function retrieveModel(
   accessToken,
   basePath,
@@ -16,7 +20,9 @@ async function retrieveModel(
   let envelopesApi = new docusign.EnvelopesApi(dsApiClient),
     results = null;
 
-    console.log("retrieveModel", count++)
+    //console.log("retrieveModel", count++)
+    
+
   return results = await envelopesApi.getDocument(
     accountId,
     envelopeId,

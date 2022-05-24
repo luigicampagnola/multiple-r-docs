@@ -8,8 +8,9 @@ const fs = require("fs");
 const events = require("events");
 const path = require("path");
 const {
-  readAccountInfo,
   readEnvelopesInfo,
+  readAccountInformation,
+  readAccessToken,
 } = require("../file-handlers/readWriteAPI");
 
 const eventEmitter = new events.EventEmitter();
@@ -18,11 +19,12 @@ const eventEmitter = new events.EventEmitter();
 // ######### R E T R I E V E  C O N T R O L L E R
 
 async function retrieveController(i) {
-  const accountInfo = await readAccountInfo().catch((error) => {
+  const accountInfo = await readAccountInformation().catch((error) => {
     console.log("error on accountInfo retrieveController");
   });
 
-  const accountId = accountInfo.accountIdGuid;
+  const accountId = accountInfo.accounts[0].accountId;
+  const basePath = accountInfo.accounts[0].baseUri + "/restapi";
 
   const envelopesInfo = await readEnvelopesInfo().catch((err) => {
     console.log("error on envelopesInfo");
@@ -30,13 +32,19 @@ async function retrieveController(i) {
 
   const envelopes = envelopesInfo.envelopes;
 
+  const getAccessToken = await readAccessToken().catch((err) => {
+    console.log("error getting accessToken retrieveController");
+  });
+
+  let accessToken = getAccessToken.accessToken;
+
   const envelopeIds = envelopes.map((envelope) => {
     return envelope.envelopeId;
   });
 
   const args = {
-    accessToken: user.accessToken,
-    basePath: user.basePath,
+    accessToken: accessToken,
+    basePath: basePath,
     accountId: accountId,
     documentId: "combined",
     envelopeId: envelopeIds,
@@ -52,7 +60,6 @@ async function retrieveController(i) {
     console.log("failed to downloadResults retrieveController");
   });
 
-
   if (downloadResults) {
     await createFolderDownload();
   } else {
@@ -61,14 +68,16 @@ async function retrieveController(i) {
   return downloadResults;
 }
 
-
+function delay(t) {
+  return new Promise((resolve) => setTimeout(resolve, t));
+}
 
 async function resultsHandler() {
   const envelopesInfo = await readEnvelopesInfo().catch((err) => {
     console.log("error on envelopesInfo resultsHandler");
   });
 
-  const accountInfo = await readAccountInfo().catch((erro) => {
+  const accountInfo = await readAccountInformation().catch((erro) => {
     console.log("error on accountInfo resultsHandler");
   });
 
@@ -91,15 +100,14 @@ async function resultsHandler() {
     return envelope.emailSubject;
   });
 
-  const accountName = accountInfo.accountName;
-  let count = 0;
+  const accountName = accountInfo.name;
 
   const dataResult = await Promise.all(
     envelopeIds.map(async (envelope, i) => {
+      await delay(10000)
       let data = await retrieveController(i).catch((err) => {
         console.log("error getting results in resultHandler let data");
       });
-
 
       let buff = Buffer.from(data, "binary");
 
@@ -109,12 +117,17 @@ async function resultsHandler() {
       readable.push(null);
       //console.log("READABLE", readable)
 
-      let fileName = `/Users/luigi.campagnola/documents/Test/downloads/${accountName}/${emailSubjects[i]}-${formatDateTime[i]}.pdf`;
+
+
+      let fileName = `/Users/luigi.campagnola/documents/Test/multiple-r-docs/downloads/${accountName}/${emailSubjects[i]}-${formatDateTime[i]}.pdf`;
       let writable = fs.createWriteStream(fileName);
 
 
-      readable.pipe(writable)
-      
+
+    
+      console.log("retrieveModel " + formatDateTime[i])
+      readable.pipe(writable);
+
     })
   );
   return dataResult;
