@@ -16,7 +16,8 @@ const {
 const eventEmitter = new events.EventEmitter();
 
 // <-----------------------------------------------------------> //
-// ######### R E T R I E V E  C O N T R O L L E R
+
+// R E T R I E V E  C O N T R O L L E R
 
 async function retrieveController(i) {
   const accountInfo = await readAccountInformation().catch((error) => {
@@ -72,6 +73,13 @@ function delay(t) {
   return new Promise((resolve) => setTimeout(resolve, t));
 }
 
+
+
+// <-----------------------------------------------------------> //
+
+// R E S U L T S  H A N D L E R
+
+
 async function resultsHandler() {
   const envelopesInfo = await readEnvelopesInfo().catch((err) => {
     console.log("error on envelopesInfo resultsHandler");
@@ -89,7 +97,8 @@ async function resultsHandler() {
   });
 
   const formatDateTime = envelopeDate.map((date) => {
-    return date.slice(0, -9);
+    let formatedDate = date.slice(0, -9)
+    return formatedDate.replace(/:/g,"-");
   });
 
   const envelopeIds = envelopes.map((envelope) => {
@@ -97,14 +106,21 @@ async function resultsHandler() {
   });
 
   const emailSubjects = envelopes.map((envelope) => {
-    return envelope.emailSubject;
+    let formatedSubject = envelope.emailSubject
+    return formatedSubject.replace(/ /g, "_");
   });
 
   const accountName = accountInfo.name;
+  
+  let formatedName = accountName.replace(/ /g, "_")
+
+  
+
+
 
   const dataResult = await Promise.all(
     envelopeIds.map(async (envelope, i) => {
-      await delay(10000)
+
       let data = await retrieveController(i).catch((err) => {
         console.log("error getting results in resultHandler let data");
       });
@@ -117,17 +133,24 @@ async function resultsHandler() {
       readable.push(null);
       //console.log("READABLE", readable)
 
+      let oldFileName = `${path.dirname(__dirname)}downloads/${accountName}/${
+        emailSubjects[i]
+      }-${formatDateTime[i]}.pdf`;
 
+      //let fileName = `/Users/luigi.campagnola/documents/Test/multiple-r-docs/downloads/${accountName}/${emailSubjects[i]}-${formatDateTime[i]}.pdf`;
 
-      let fileName = `/Users/luigi.campagnola/documents/Test/multiple-r-docs/downloads/${accountName}/${emailSubjects[i]}-${formatDateTime[i]}.pdf`;
-      let writable = fs.createWriteStream(fileName);
+      let folderPath = path.join(
+        path.dirname(__dirname),
+        "downloads",
+        `${formatedName}`,
+        `${emailSubjects[i]}-${formatDateTime[i]}.pdf`
+      );
 
+      console.log(folderPath)
+      let writable = fs.createWriteStream(folderPath);
 
-
-    
-      console.log("retrieveModel " + formatDateTime[i])
+      console.log("retrieveModel " + formatDateTime[i]);
       readable.pipe(writable);
-
     })
   );
   return dataResult;

@@ -22,7 +22,7 @@ async function retrieveModel(
 
     //console.log("retrieveModel", count++)
     
-
+  console.log(count++)
   return results = await envelopesApi.getDocument(
     accountId,
     envelopeId,

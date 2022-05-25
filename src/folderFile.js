@@ -8,12 +8,14 @@ async function createFolderDownload() {
     console.log("error accountInfo createFolderDownload")
   );
 
-  const accountName = accountInfo.name
+  const accountName = accountInfo.name;
+  let formatedName = accountName.replace(/ /g, "_")
+
   const folderDownload = path.dirname(__dirname) + "/downloads/";
 
 
   //console.log(__dirname)
-  const accountNameFolder = folderDownload + accountName;
+  const accountNameFolder = folderDownload + formatedName;
 
   //console.log(accountNameFolder);
   if (!fs.existsSync(folderDownload)) {
