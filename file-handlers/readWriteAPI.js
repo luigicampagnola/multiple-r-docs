@@ -54,36 +54,10 @@ async function writeEnvelopesInfo() {
   writer.write(JSON.stringify(results, null, 2));
 }
 
-// write  envelopes
 
-/* async function writeFileEnvelopesInfo() {
-  const accountInfo = await readAccountInfo().catch((erro) => {
-    console.log("error accountInfo writeFileEnvelopesInfo");
-  });
+// WRITE ACCOUNT INFO (N O T  N E E D E D)
 
-  console.log(accountInfo);
-
-  const accountId = accountInfo.accountIdGuid;
-  //console.log(accountId)
-  const results = await getFolderModel().catch((error) =>
-    console.log("error on createFileEnvelopeId")
-  );
-  if (results) {
-    if (!fs.existsSync(folderPath)) {
-      fs.mkdirSync(folderPath);
-    }
-  }
-
-  let writer = fs.createWriteStream(folderPath + "envelopes.json");
-
-  writer.write(JSON.stringify(results, null, 2));
-
-  return "Success";
-}  */
-
-// WRITE ACCOUNT INFO
-
-async function writeAccountInfo() {
+/* async function writeAccountInfo() {
   const results = await getUserInfoModel().catch((err) =>
     console.log("err on getUserInfo writeAccountInfo")
   );
@@ -100,20 +74,11 @@ async function writeAccountInfo() {
   writer.write(JSON.stringify(results, null, 2));
 
   return "Success";
-}
+} */
 
 // <-------------------------- R E A D  I N F O  J S O N  F I L E S --------------------------------->
 
-/*  async function readAccountInfo() {
-  let reader = fs.createReadStream(accountInfoFile);
 
-  return new Promise((resolve, reject) => {
-    reader.on("data", function (chunk) {
-      //console.log(JSON.parse(chunk))
-      return resolve(JSON.parse(chunk));
-    });
-  });
-}  */
 
 async function readEnvelopesInfo() {
   let reader = fs.createReadStream(envelopeFile, "utf8");

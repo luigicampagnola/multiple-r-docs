@@ -1,53 +1,54 @@
 const docusign = require("docusign-esign");
-const user  = require("../data/data");
+const user = require("../data/data");
 const moment = require("moment");
 
+// G E T  F O L D E R  M O D E L
+
 async function getFolderModel(accountId, token, basePath) {
-
-
   let dsApiClient = new docusign.ApiClient();
-
 
   dsApiClient.setBasePath(basePath);
 
   dsApiClient.addDefaultHeader("Authorization", "Bearer " + token);
 
-
-
-
   //console.log(user.accessToken)
   let envelopesApi = new docusign.EnvelopesApi(dsApiClient),
     results = null;
 
-    
   let options = { fromDate: moment().subtract(30, "days").format() };
 
-  results = await envelopesApi.listStatusChanges(accountId, options).catch(err=>console.log(err))
+  try {
+    return (results = await envelopesApi
+      .listStatusChanges(accountId, options)
+      .catch((err) => console.log(err)));
+  } catch (e) {
+    console.log("error at results in getFolderMode");
+  }
 
   //console.log(results);
-  
-  return results;
 }
 
-async function getRecipientsInfoModel (accountId, envelopeId){
+// G E T  R E C I P I E N T S  I N F O  M O D E L
+
+async function getRecipientsInfoModel(accountId, envelopeId) {
   let dsApiClient = new docusign.ApiClient();
   dsApiClient.setBasePath(user.basePath);
   dsApiClient.addDefaultHeader("Authorization", "Bearer " + user.accessToken);
 
   let envelopesApi = new docusign.EnvelopesApi(dsApiClient);
 
-  results = await envelopesApi.listRecipients(
-    accountId,
-    envelopeId,
-    null
-  );
-
-  return results;
+  try {
+    return (results = await envelopesApi.listRecipients(
+      accountId,
+      envelopeId,
+      null
+    ));
+  } catch (e) {
+    console.log("error at results in getRecipientsInfoModel");
+  }
 }
-
 
 module.exports = {
   getFolderModel,
   getRecipientsInfoModel,
 };
-

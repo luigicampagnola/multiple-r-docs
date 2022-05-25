@@ -5,20 +5,20 @@ const user = require("../data/data");
 
 const eventEmitter = new events.EventEmitter(); */
 
-
-async function getUserInfoModel() {
-
+async function getUserInfoModel(token) {
   let dsApiClient = new docusign.ApiClient();
   dsApiClient.setBasePath(user.basePath);
-  dsApiClient.addDefaultHeader("Authorization", "Bearer " + user.accessToken);
+  dsApiClient.addDefaultHeader("Authorization", "Bearer " + token);
 
   const accountsApi = new docusign.AccountsApi(dsApiClient);
   const account = await accountsApi.getAccountInformation(user.accountId);
-  
-  return account;
+
+  try {
+    return account;
+  } catch (e) {
+    console.log("error at account on getUserInfoModel");
+  }
 }
-
-
 
 //eventEmitter.on("getUser", getUserInfoModel);
 //eventEmitter.emit("getUser");

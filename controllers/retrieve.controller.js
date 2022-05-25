@@ -19,7 +19,7 @@ const eventEmitter = new events.EventEmitter();
 
 // R E T R I E V E  C O N T R O L L E R
 
-async function retrieveController(i) {
+async function retrieveController(envelope, i) {
   const accountInfo = await readAccountInformation().catch((error) => {
     console.log("error on accountInfo retrieveController");
   });
@@ -31,7 +31,7 @@ async function retrieveController(i) {
     console.log("error on envelopesInfo");
   });
 
-  const envelopes = envelopesInfo.envelopes;
+  console.log(envelope)
 
   const getAccessToken = await readAccessToken().catch((err) => {
     console.log("error getting accessToken retrieveController");
@@ -39,16 +39,13 @@ async function retrieveController(i) {
 
   let accessToken = getAccessToken.accessToken;
 
-  const envelopeIds = envelopes.map((envelope) => {
-    return envelope.envelopeId;
-  });
 
   const args = {
     accessToken: accessToken,
     basePath: basePath,
     accountId: accountId,
     documentId: "combined",
-    envelopeId: envelopeIds,
+    envelopeId: envelope,
   };
 
   const downloadResults = await retrieveModel(
@@ -56,7 +53,7 @@ async function retrieveController(i) {
     args.basePath,
     args.accountId,
     args.documentId,
-    args.envelopeId[i]
+    args.envelopeId
   ).catch((error) => {
     console.log("failed to downloadResults retrieveController");
   });
@@ -67,10 +64,6 @@ async function retrieveController(i) {
     console.log("error on createfolder retrieveController");
   }
   return downloadResults;
-}
-
-function delay(t) {
-  return new Promise((resolve) => setTimeout(resolve, t));
 }
 
 
@@ -116,12 +109,13 @@ async function resultsHandler() {
 
   
 
+  const wait = ms => new Promise(resolve => setTimeout(resolve, ms))
 
 
   const dataResult = await Promise.all(
     envelopeIds.map(async (envelope, i) => {
-
-      let data = await retrieveController(i).catch((err) => {
+      await wait(i * 4200);
+      let data = await retrieveController(envelope, i).catch((err) => {
         console.log("error getting results in resultHandler let data");
       });
 
@@ -131,13 +125,7 @@ async function resultsHandler() {
       readable._read = () => {};
       readable.push(buff, "binary");
       readable.push(null);
-      //console.log("READABLE", readable)
 
-      let oldFileName = `${path.dirname(__dirname)}downloads/${accountName}/${
-        emailSubjects[i]
-      }-${formatDateTime[i]}.pdf`;
-
-      //let fileName = `/Users/luigi.campagnola/documents/Test/multiple-r-docs/downloads/${accountName}/${emailSubjects[i]}-${formatDateTime[i]}.pdf`;
 
       let folderPath = path.join(
         path.dirname(__dirname),
@@ -146,18 +134,19 @@ async function resultsHandler() {
         `${emailSubjects[i]}-${formatDateTime[i]}.pdf`
       );
 
-      console.log(folderPath)
+      //console.log(folderPath)
       let writable = fs.createWriteStream(folderPath);
 
       console.log("retrieveModel " + formatDateTime[i]);
       readable.pipe(writable);
     })
   );
+
   return dataResult;
 }
 
-//eventEmitter.on("results", resultsHandler);
-//eventEmitter.emit("results");
+eventEmitter.on("results", resultsHandler);
+eventEmitter.emit("results");
 
 //eventEmitter.on("name", getRecipientsNames);
 //eventEmitter.emit("name");
