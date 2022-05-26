@@ -1,5 +1,6 @@
 const { readAccountInformation } = require("../file-handlers/readWriteAPI")
 const fs = require("fs");
+const logger = require("../logger")
 
 const path = require("path");
 
@@ -14,6 +15,8 @@ async function createFolderDownload() {
   const folderDownload = path.dirname(__dirname) + "/downloads/";
 
 
+
+
   //console.log(__dirname)
   const accountNameFolder = folderDownload + formatedName;
 
@@ -23,6 +26,7 @@ async function createFolderDownload() {
   }
   if (!fs.existsSync(accountNameFolder)) {
     fs.mkdirSync(accountNameFolder);
+    logger.info("New Folder - Name: " + formatedName);
   }
 }
 

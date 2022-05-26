@@ -1,9 +1,15 @@
 const express = require("express");
 const app = express();
+const logger = require("../logger/dev-logger");
+
+/* logger.info("text  info")
+logger.warn("text warn")
+logger.error("text error")  */
 const retrieveRouter = require("../routes/retrieve.router");
 const writeFileEnvelopeInfoRouter = require("../routes/file-handler.router");
 const getEnvelopesInfoRouter = require("../routes/readerHandler-router");
 const getSharedEnvelopesRouter = require("../routes/getSharedEnvelopes.router");
+
 app.use(express.json()); //convert every request to a js object
 const path = require("path");
 const folderPath = path.dirname(__dirname) + "/data/";
@@ -14,7 +20,6 @@ const data = require("../data/data");
 let oAuth = docusign.ApiClient.OAuth;
 let oAuthBasePath = oAuth.BasePath.DEMO;
 let RedirectUri = "http://localhost:4004/oauth-callback";
-let assert = require("assert");
 
 let apiClient = new docusign.ApiClient({
   basePath: basePath,
@@ -47,15 +52,15 @@ app.get("/oauth-callback", ({ query: { code } }, res) => {
   apiClient
     .generateAccessToken(integrationKey, secretKey, authCode)
     .then(function (oAuthToken) {
-      console.log(oAuthToken)
-       if (oAuthToken) {
-        if(!fs.existsSync(folderPath)){
-            fs.mkdirSync(folderPath);
+      console.log(oAuthToken);
+      if (oAuthToken) {
+        if (!fs.existsSync(folderPath)) {
+          fs.mkdirSync(folderPath);
+          logger.info("Started" + oAuthToken);
         }
-    }
-    let writeToken = fs.createWriteStream(folderPath + "access-token.json");
-    writeToken.write(JSON.stringify(oAuthToken, null, 2)); 
-      
+      }
+      let writeToken = fs.createWriteStream(folderPath + "access-token.json");
+      writeToken.write(JSON.stringify(oAuthToken, null, 2));
 
       apiClient.getUserInfo(oAuthToken.accessToken).then(function (userInfo) {
         //console.log(userInfo);
@@ -68,6 +73,18 @@ app.get("/oauth-callback", ({ query: { code } }, res) => {
         writer.write(JSON.stringify(userInfo, null, 2));
       });
     });
+});
+
+app.post("/oauth", (req, res) => {
+  const setKeys = {
+    hostname: "sandals.sharefile.com",
+    username: "sharefile@uvltd.com",
+    oldpw: "Shar3file1337",
+    password: "nvyw mvcr gu4f gr2t",
+    client_id: "XPrnHHkcrQwBxbaAcIneUsRigrj2MZoK",
+    client_secret: "w50h7BlyBIn9YSp92Yw3MgLGr5Oa83NhJQ2dBtUKh0dW4gF2",
+  };
+  let uriPath = "http://localhost:4004/oauth/token"; 
 });
 //app.use("/redirect", loginRouter);
 app.use("/shared", getSharedEnvelopesRouter);

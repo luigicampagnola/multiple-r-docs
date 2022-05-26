@@ -6,6 +6,7 @@ const fs = require("fs"),
 const events = require("events");
 const path = require("path");
 const { getUserInfoModel } = require("../models/userInfo.model");
+const logger = require("../logger");
 
 const eventEmitter = new events.EventEmitter();
 
@@ -25,11 +26,11 @@ const accessAccountInfoFile = path.join(folderPath, "user-Info.json");
 
 async function writeEnvelopesInfo() {
   const accountInfo = await readAccountInformation().catch((err) => {
-    console.log("error readAccountInformation writeEnvelopesInfo");
+    logger.error("error readAccountInformation writeEnvelopesInfo");
   });
 
   const accessToken = await readAccessToken().catch((err) => {
-    console.log("error getting accessToken  writeEnvelopesInfo");
+    logger.error("error getting accessToken  writeEnvelopesInfo");
   });
 
   let token = accessToken.accessToken;
@@ -37,10 +38,9 @@ async function writeEnvelopesInfo() {
   const accoundId = accountInfo.accounts[0].accountId;
   let basePath = accountInfo.accounts[0].baseUri + "/restapi";
 
-  console.log(basePath);
 
   const results = await getFolderModel(accoundId, token, basePath).catch(
-    (erro) => console.log("error handling getFolderModel writeEnvelopesInfo")
+    (erro) => logger.error("error handling getFolderModel writeEnvelopesInfo")
   );
 
   if (results) {
@@ -87,7 +87,6 @@ async function readEnvelopesInfo() {
     data += chunk;
   }
 
-  //console.log(JSON.parse(data))
   return JSON.parse(data);
 }
 
@@ -101,7 +100,6 @@ async function readAccessToken() {
     data += chunk;
   }
 
-  //onsole.log(data);
   return JSON.parse(data);
 }
 
@@ -115,11 +113,11 @@ async function readAccountInformation() {
     data += chunk;
   }
 
-  //console.log(JSON.parse(data));
   return JSON.parse(data);
 }
 
 eventEmitter.on("read", readAccountInformation);
+
 eventEmitter.emit("read");
 //eventEmitter.on("readAccountInfo", readEnvelopesInfo);
 

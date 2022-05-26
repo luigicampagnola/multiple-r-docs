@@ -1,5 +1,6 @@
 const docusign = require("docusign-esign");
 let count = 0;
+const logger = require("../logger")
 
 // R E T R I E V E  M O D E L
 
@@ -19,7 +20,7 @@ async function retrieveModel(
 
   //console.log("retrieveModel", count++)
 
-  console.log(count++);
+  //console.log(count++);
   try {
     return (results = await envelopesApi.getDocument(
       accountId,
@@ -28,7 +29,7 @@ async function retrieveModel(
       {}
     ));
   } catch (e) {
-    console.log("error on results");
+    logger.error(new Error("error on results retrieveModel"))
   }
 }
 

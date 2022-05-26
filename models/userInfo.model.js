@@ -1,5 +1,6 @@
 const docusign = require("docusign-esign");
 const user = require("../data/data");
+const logger = require("../logger");
 
 /* const events = require("events");
 
@@ -16,7 +17,7 @@ async function getUserInfoModel(token) {
   try {
     return account;
   } catch (e) {
-    console.log("error at account on getUserInfoModel");
+    logger.error("error at account on getUserInfoModel");
   }
 }
 

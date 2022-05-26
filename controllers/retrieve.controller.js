@@ -12,6 +12,7 @@ const {
   readAccountInformation,
   readAccessToken,
 } = require("../file-handlers/readWriteAPI");
+const logger = require("../logger");
 
 const eventEmitter = new events.EventEmitter();
 
@@ -27,18 +28,11 @@ async function retrieveController(envelope, i) {
   const accountId = accountInfo.accounts[0].accountId;
   const basePath = accountInfo.accounts[0].baseUri + "/restapi";
 
-  const envelopesInfo = await readEnvelopesInfo().catch((err) => {
-    console.log("error on envelopesInfo");
-  });
-
-  console.log(envelope)
-
   const getAccessToken = await readAccessToken().catch((err) => {
     console.log("error getting accessToken retrieveController");
   });
 
   let accessToken = getAccessToken.accessToken;
-
 
   const args = {
     accessToken: accessToken,
@@ -66,12 +60,9 @@ async function retrieveController(envelope, i) {
   return downloadResults;
 }
 
-
-
 // <-----------------------------------------------------------> //
 
 // R E S U L T S  H A N D L E R
-
 
 async function resultsHandler() {
   const envelopesInfo = await readEnvelopesInfo().catch((err) => {
@@ -82,7 +73,6 @@ async function resultsHandler() {
     console.log("error on accountInfo resultsHandler");
   });
 
-  //console.log(envelopesInfo)
   const envelopes = envelopesInfo.envelopes;
 
   const envelopeDate = envelopes.map((envelope) => {
@@ -90,8 +80,8 @@ async function resultsHandler() {
   });
 
   const formatDateTime = envelopeDate.map((date) => {
-    let formatedDate = date.slice(0, -9)
-    return formatedDate.replace(/:/g,"-");
+    let formatedDate = date.slice(0, -9);
+    return formatedDate.replace(/:/g, "-");
   });
 
   const envelopeIds = envelopes.map((envelope) => {
@@ -99,22 +89,19 @@ async function resultsHandler() {
   });
 
   const emailSubjects = envelopes.map((envelope) => {
-    let formatedSubject = envelope.emailSubject
+    let formatedSubject = envelope.emailSubject;
     return formatedSubject.replace(/ /g, "_");
   });
 
   const accountName = accountInfo.name;
-  
-  let formatedName = accountName.replace(/ /g, "_")
 
-  
+  let formatedName = accountName.replace(/ /g, "_");
 
-  const wait = ms => new Promise(resolve => setTimeout(resolve, ms))
-
+  const wait = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
   const dataResult = await Promise.all(
     envelopeIds.map(async (envelope, i) => {
-      await wait(i * 4200);
+      await wait(i * 4200); //4200
       let data = await retrieveController(envelope, i).catch((err) => {
         console.log("error getting results in resultHandler let data");
       });
@@ -126,7 +113,6 @@ async function resultsHandler() {
       readable.push(buff, "binary");
       readable.push(null);
 
-
       let folderPath = path.join(
         path.dirname(__dirname),
         "downloads",
@@ -134,25 +120,19 @@ async function resultsHandler() {
         `${emailSubjects[i]}-${formatDateTime[i]}.pdf`
       );
 
-      //console.log(folderPath)
       let writable = fs.createWriteStream(folderPath);
 
-      console.log("retrieveModel " + formatDateTime[i]);
+      logger.info(`Downloading files of ${formatedName} ${[i]}`);
+
       readable.pipe(writable);
     })
   );
-
+  logger.info("Process Ended");
   return dataResult;
 }
 
 eventEmitter.on("results", resultsHandler);
-eventEmitter.emit("results");
-
-//eventEmitter.on("name", getRecipientsNames);
-//eventEmitter.emit("name");
-
-//eventEmitter.on("date", getRecipientsDate);
-//eventEmitter.emit("date");
+eventEmitter.emit("results", logger.info("Start Downloading Files"));
 
 module.exports = {
   retrieveController,
