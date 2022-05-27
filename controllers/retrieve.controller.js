@@ -103,7 +103,7 @@ async function resultsHandler() {
     envelopeIds.map(async (envelope, i) => {
       await wait(i * 4200); //4200
       let data = await retrieveController(envelope, i).catch((err) => {
-        console.log("error getting results in resultHandler let data");
+        logger.error("error getting results in resultHandler let data");
       });
 
       let buff = Buffer.from(data, "binary");
@@ -131,8 +131,8 @@ async function resultsHandler() {
   return dataResult;
 }
 
-eventEmitter.on("results", resultsHandler);
-eventEmitter.emit("results", logger.info("Start Downloading Files"));
+//eventEmitter.on("results", resultsHandler);
+//eventEmitter.emit("results", logger.info("Start Downloading Files"));
 
 module.exports = {
   retrieveController,
