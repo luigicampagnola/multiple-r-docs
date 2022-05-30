@@ -31,38 +31,9 @@ let scopes = [apiClient.OAuth.Scope.SIGNATURE];
 
 let randomState = "*^.$DGj*)+}Jk";
 
-/* let key_context = {
-  hostname: "sandals.sharefile.com",
-  username: "sharefile@uvltd.com",
-  oldpw: "Shar3file1337",
-  password: "nvyw mvcr gu4f gr2t",
-  client_id: "XPrnHHkcrQwBxbaAcIneUsRigrj2MZoK",
-  client_secret: "w50h7BlyBIn9YSp92Yw3MgLGr5Oa83NhJQ2dBtUKh0dW4gF2",
-};
 
-let client_id = key_context.client_id;
-let client_secret = key_context.client_secret;
-let redirect_uri = "http://localhost:4004/oauth-token";
-var get_toke_data_preamble = "grant_type = authorization_code&code";
-var get_token_options = {
-  hostname: "http://secure.sharefile.com",
-  port: "4004",
-  path: "/oauth/token",
-  method: "POST",
-  headers: {
-    "Content-Type": "application/x-www-form-urlencoded",
-    "Content-Length": 10
-  }
-};
 
-app.get("/oauth", (req, res)=>{
-  let authUri = `https://secure.sharefile.com/oauth/authorize?response_type=code&client_id=${client_id}&redirect_uri=${redirect_uri}`
-  res.redirect(authUri)
-})
 
-app.get("/oauth-token", ({ query: {code}}, res)=>{
-  console.log(12);
-}) */
 
 app.get("/", (req, res) => {
   console.log("-C-> /");
@@ -74,9 +45,7 @@ app.get("/", (req, res) => {
 });
 
 app.get("/oauth", (req, res) => {
-  console.log(`-C-> /auth`);
-  let subdomain = req.query.subdomain;
-  console.log(subdomain);
+  auth_client.authenticate(req, res)
 });
 
 
