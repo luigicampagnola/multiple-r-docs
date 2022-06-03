@@ -55,26 +55,6 @@ async function writeEnvelopesInfo() {
 }
 
 
-// WRITE ACCOUNT INFO (N O T  N E E D E D)
-
-/* async function writeAccountInfo() {
-  const results = await getUserInfoModel().catch((err) =>
-    console.log("err on getUserInfo writeAccountInfo")
-  );
-
-  console.log(results);
-
-  if (results) {
-    if (!fs.existsSync(folderPath)) {
-      fs.mkdirSync(folderPath);
-    }
-  }
-
-  let writer = fs.createWriteStream(folderPath + "accountInfo.json");
-  writer.write(JSON.stringify(results, null, 2));
-
-  return "Success";
-} */
 
 // <-------------------------- R E A D  I N F O  J S O N  F I L E S --------------------------------->
 
@@ -116,9 +96,9 @@ async function readAccountInformation() {
   return JSON.parse(data);
 }
 
-eventEmitter.on("read", readAccountInformation);
+//eventEmitter.on("read", readAccountInformation);
 
-eventEmitter.emit("read");
+//eventEmitter.emit("read");
 //eventEmitter.on("readAccountInfo", readEnvelopesInfo);
 
 module.exports = {

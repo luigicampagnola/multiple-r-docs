@@ -1,18 +1,24 @@
+let key_context = {
+  hostname: "sandals.sharefile.com",
+  username: "sharefile@uvltd.com",
+  oldpw: "Shar3file1337",
+  password: "nvyw mvcr gu4f gr2t",
+  client_id: "XPrnHHkcrQwBxbaAcIneUsRigrj2MZoK",
+  client_secret: "w50h7BlyBIn9YSp92Yw3MgLGr5Oa83NhJQ2dBtUKh0dW4gF2",
+};
 
-
-var https = require("https");
+var axios = require("axios").default;
 
 var client_id = key_context.client_id;
 var client_secret = key_context.client_secret;
-var redirect = "http://localhost:4004/oauth-cb";
+const http = require("http");
 
 // Make the posted data look like this:
 // grant_type=authorization_code&code=[code]&client_id=[client_id]&client_secret=[client_secret]
-var get_token_data_preamble = "grant_type=authorization_code&code=";
-var get_token_options = {
-  hostname: "secure.sharefile.com",
-  port: "443",
-  path: "/oauth/token",
+
+var options2 = {
+  hostname: "sandals.sharefile.com",
+  path: "http://localhost:4004/oauth",
   method: "POST",
   headers: {
     "Content-Type": "application/x-www-form-urlencoded",
@@ -27,32 +33,33 @@ var get_token_options = {
   },
 };
 
-module.exports = {
-  authenticate: function (req, callback) {
-    var request = https.request(get_token_options, function (response) {
-      var resultString = "";
-      response.on("data", function (chunk) {
-        try {
-          resultString += chunk;
-          console.log(chunk);
-        } catch (e) {
-          console.log("error");
-        }
-      });
-      response.on("end", function (chunk) {
-        console.log("-S-> auth result: " + resultString);
-        callback(resultString);
-        console.log(resultString);
-      });
-      console.log(response);
-    });
+var options = {
+  method: "POST",
+  url: "http://sandals.sharefile.com/oauth/token",
+  headers: { "content-type": "application/x-www-form-urlencoded" },
+  data: {
+    grant_type: "password",
+    username: "sharefile@uvltd.com",
+    password: "nvyw mvcr gu4f gr2t",
 
-    console.log(request);
-/* 
-      request.write(callback);
-      request.end(); */
-    // Write the token data in the body
-    /*     request.write(get_token_data);
-     */
+    client_id: "XPrnHHkcrQwBxbaAcIneUsRigrj2MZoK",
+    client_secret: "w50h7BlyBIn9YSp92Yw3MgLGr5Oa83NhJQ2dBtUKh0dW4gF2",
+  },
+};
+
+
+
+module.exports = {
+  authenticate: async function (req, callback) {
+    await axios.post(options.url, {
+      data: {
+        grant_type: "password",
+        username: "sharefile@uvltd.com",
+        password: "nvyw mvcr gu4f gr2t",
+    
+        client_id: "XPrnHHkcrQwBxbaAcIneUsRigrj2MZoK",
+        client_secret: "w50h7BlyBIn9YSp92Yw3MgLGr5Oa83NhJQ2dBtUKh0dW4gF2",
+      },    
+    }).catch(e =>console.log(e))
   },
 };
